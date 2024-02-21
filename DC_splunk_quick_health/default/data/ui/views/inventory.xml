@@ -1,0 +1,295 @@
+<form version="1.1" theme="dark">
+  <init>
+    <set token="showExpandLink1">true</set>
+    <set token="showExpandLink2">true</set>
+    <set token="showExpandLink3">true</set>
+    <set token="showExpandLink4">true</set>
+    <set token="showExpandLink5">true</set>
+    <set token="showExpandLink6">true</set>
+  </init>
+  <label>splunk inventory and uf status</label>
+  <fieldset submitButton="false"></fieldset>
+  <row>
+    <panel>
+      <!-- This changes the colour and font sizes -->
+      <html>
+        <style>
+          table tbody tr td{
+            font-size:120% !important;
+            }
+          table thead tr th{
+          font-size:120% !important;
+          }
+       
+         table th td {
+         color:#b3b300;
+        
+         }
+          table tr td {
+         color:#b3b300;
+         }
+         </style>
+      </html>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Splunk inventory</title>
+      <table>
+        <search>
+          <query>| rest /services/server/info splunk_server=*
+| table host, licenseState, numberOfCores, os_name, os_version, physicalMemoryMB, product_type, version, server_roles</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">5</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel1">
+      <title>forwarder status</title>
+      <input id="linkCollapse1" type="link" token="tokLinkCollapse1" searchWhenChanged="true" depends="$showCollapseLink1$">
+        <label></label>
+        <choice value="collapse">-</choice>
+        <change>
+          <condition value="collapse">
+            <unset token="showCollapseLink1"></unset>
+            <set token="showExpandLink1">true</set>
+            <unset token="form.tokLinkCollapse1"></unset>
+          </condition>
+        </change>
+      </input>
+      <input id="linkExpand1" type="link" token="tokLinkExpand1" searchWhenChanged="true" depends="$showExpandLink1$">
+        <label></label>
+        <choice value="expand">+</choice>
+        <change>
+          <condition value="expand">
+            <set token="showCollapseLink1">true</set>
+            <unset token="showExpandLink1"></unset>
+            <unset token="form.tokLinkExpand1"></unset>
+          </condition>
+        </change>
+      </input>
+      <table rejects="$showExpandLink1$">
+        <search>
+          <query>| metadata type=hosts index=_internal  
+| eval server=lower(host)
+| table server, recentTime 
+| eval age=now()-recentTime 
+| eval status=if(age&lt;300,"UP","DOWN")
+| table server, status</query>
+          <earliest>-60m@m</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel2">
+      <title>top forwarders</title>
+      <input id="linkCollapse2" type="link" token="tokLinkCollapse2" searchWhenChanged="true" depends="$showCollapseLink2$">
+        <label></label>
+        <choice value="collapse">-</choice>
+        <change>
+          <condition value="collapse">
+            <unset token="showCollapseLink2"></unset>
+            <set token="showExpandLink2">true</set>
+            <unset token="form.tokLinkCollapse2"></unset>
+          </condition>
+        </change>
+      </input>
+      <input id="linkExpand2" type="link" token="tokLinkExpand2" searchWhenChanged="true" depends="$showExpandLink2$">
+        <label></label>
+        <choice value="expand">+</choice>
+        <change>
+          <condition value="expand">
+            <set token="showCollapseLink2">true</set>
+            <unset token="showExpandLink2"></unset>
+            <unset token="form.tokLinkExpand2"></unset>
+          </condition>
+        </change>
+      </input>
+      <chart rejects="$showExpandLink2$">
+        <search>
+          <query>index=_internal  source="*metrics.log" sourcetype=splunkd  group=per_host_thruput
+| eval host=lower(host)
+| eval megabytes=round(kb/1024,0)
+| timechart  sum(megabytes) as MB by host  useother=false limit=10</query>
+          <earliest>-60m@m</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.chart">line</option>
+        <option name="charting.drilldown">all</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel3">
+      <title>forwarders audit</title>
+      <input id="linkCollapse3" type="link" token="tokLinkCollapse3" searchWhenChanged="true" depends="$showCollapseLink3$">
+        <label></label>
+        <choice value="collapse">-</choice>
+        <change>
+          <condition value="collapse">
+            <unset token="showCollapseLink3"></unset>
+            <set token="showExpandLink3">true</set>
+            <unset token="form.tokLinkCollapse3"></unset>
+          </condition>
+        </change>
+      </input>
+      <input id="linkExpand3" type="link" token="tokLinkExpand3" searchWhenChanged="true" depends="$showExpandLink3$">
+        <label></label>
+        <choice value="expand">+</choice>
+        <change>
+          <condition value="expand">
+            <set token="showCollapseLink3">true</set>
+            <unset token="showExpandLink3"></unset>
+            <unset token="form.tokLinkExpand3"></unset>
+          </condition>
+        </change>
+      </input>
+      <table rejects="$showExpandLink3$">
+        <search>
+          <query>index=_internal source=*metrics.log group=tcpin_connections fwdType=uf hostname=* | eval hostname=lower(hostname)  
+| fields _time hostname sourceIp arch destPort fwdType os ssl version
+| table _time hostname sourceIp arch destPort fwdType os ssl version</query>
+          <earliest>-60m@m</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel4">
+      <title>fowarder_send_status_idx</title>
+      <input id="linkCollapse4" type="link" token="tokLinkCollapse4" searchWhenChanged="true" depends="$showCollapseLink4$">
+        <label></label>
+        <choice value="collapse">-</choice>
+        <change>
+          <condition value="collapse">
+            <unset token="showCollapseLink4"></unset>
+            <set token="showExpandLink4">true</set>
+            <unset token="form.tokLinkCollapse4"></unset>
+          </condition>
+        </change>
+      </input>
+      <input id="linkExpand4" type="link" token="tokLinkExpand4" searchWhenChanged="true" depends="$showExpandLink4$">
+        <label></label>
+        <choice value="expand">+</choice>
+        <change>
+          <condition value="expand">
+            <set token="showCollapseLink4">true</set>
+            <unset token="showExpandLink4"></unset>
+            <unset token="form.tokLinkExpand4"></unset>
+          </condition>
+        </change>
+      </input>
+      <table rejects="$showExpandLink4$">
+        <search>
+          <query>index=_internal sourcetype=splunkd log_level=INFO TcpOutputProc Connected 
+| eval host=lower(host)  
+| stats dc(idx) AS idx_count values(idx) by host  | eventstats mode(idx_count) AS mode_idx | eval Status=if(mode_idx!=idx_count, "severe", "low")  | eval indexer_deviation=idx_count-mode_idx  | fields - mode* | sort 0 Status  | where 1==1</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">20</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel id="panel5">
+      <title>throttle_checks</title>
+      <input id="linkCollapse5" type="link" token="tokLinkCollapse5" searchWhenChanged="true" depends="$showCollapseLink5$">
+        <label></label>
+        <choice value="collapse">-</choice>
+        <change>
+          <condition value="collapse">
+            <unset token="showCollapseLink5"></unset>
+            <set token="showExpandLink5">true</set>
+            <unset token="form.tokLinkCollapse5"></unset>
+          </condition>
+        </change>
+      </input>
+      <input id="linkExpand5" type="link" token="tokLinkExpand5" searchWhenChanged="true" depends="$showExpandLink5$">
+        <label></label>
+        <choice value="expand">+</choice>
+        <change>
+          <condition value="expand">
+            <set token="showCollapseLink5">true</set>
+            <unset token="showExpandLink5"></unset>
+            <unset token="form.tokLinkExpand5"></unset>
+          </condition>
+        </change>
+      </input>
+      <table rejects="$showExpandLink5$">
+        <search>
+          <query>index=_internal earliest=-24h sourcetype=splunkd ThruputProcessor data maxKBps | rex "throughput\s\((?&lt;maxKBps&gt;\d+)" | stats count sparkline(count) avg(maxKBps) by host | eval avg(maxKBps)=round('avg(maxKBps)', 2) | sort 0 - count</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">20</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+  <row depends="$alwaysHideCSSStyleOverride$">
+    <panel>
+      <html>
+        <style>
+          div[id^="linkCollapse"],
+          div[id^="linkExpand"]{
+            width: 32px !important;
+            float: right;
+          }
+          div[id^="linkCollapse"] button,
+          div[id^="linkExpand"] button{
+            flex-grow: 0;
+            border-radius: 25px;
+            border-width: thin;
+            border-color: lightgrey;
+            border-style: inset;
+            width: 32px;
+            padding: 0px;
+          }
+          div[id^="linkCollapse"] label,
+          div[id^="linkExpand"] label{
+            display:none;
+          }
+          div[id^="panel"].fieldset{
+            padding: 0px;
+          }
+        </style>
+      </html>
+    </panel>
+  </row>
+</form>

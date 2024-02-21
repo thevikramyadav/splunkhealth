@@ -1,0 +1,75 @@
+<nav search_view="search" color ="#c70000" >
+
+<view name="home" default='true' />
+
+<collection label="Quick Checks">
+<view name="check" />
+<divider />
+<view name="indexes" />
+<divider />
+<view name="inventory" />
+<divider />
+<view name="sourcetypes" />
+<divider />
+<view name="assets" />
+<divider />
+</collection>
+<collection label="Troubleshooting">
+        <view name="dma_checks"></view>
+        <view name="core_checks"></view>
+        <view name="compute_checks"></view>
+        <view name="search_checks"></view>
+        <view name="disk_checks"></view>
+        <view name="queues_checks"></view>
+        <view name="internal_log_checks"></view>
+</collection>
+
+<collection label="Data Checks">
+        <view name="ingest_data_checks"></view>
+        <view name="data_quality_checks"></view>
+</collection>
+
+
+<collection label="ES Checks">
+        <view name="es_checks"></view>
+        <view name="index_cim_data_checks"></view>
+        <view name="es_lookups_checks"></view>
+</collection>
+
+
+<collection label="Admin">
+        <view name="user_quota_checks"></view>
+        <view name="app_analytics_checks"></view>
+        <view name="user_roles_checks"></view>
+</collection>
+
+<collection label="Config Tracker">
+        <view name="config_tracker_checks"></view>
+</collection>
+
+
+<collection label="Audit">
+        <view name="user_search_checks"></view>
+        <view name="audit_user_login_checks"></view>
+</collection>
+
+
+
+<collection label="Documentation">
+  <!--   <view name="data_source" /> -->
+  <a target="_blank" href="https://splunkbase.splunk.com/app/4372/#/details">Documentation</a>
+  <a target="_blank" href="https://answers.splunk.com/answers/ask.html?appid=4372">Ask a Question</a>
+  <a target="_blank" href="https://docs.splunk.com/Documentation/ES">ES Docs</a>
+
+
+  </collection>
+
+<collection label="Search">
+        <view name="dashboards"/>
+        <view name="reports"/>
+        <view name="alerts"/>
+        <view name="search"/>
+    </collection>
+
+
+</nav>
